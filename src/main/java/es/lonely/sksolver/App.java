@@ -12,6 +12,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -63,10 +64,8 @@ public final class App extends Application {
         };
         borderPane1.setRight(sp);});
 
-        solveButton.setOnAction(e -> {System.out.println("Solve"); stage.setScene(scene3);});
+        solveButton.setOnAction(e -> {System.out.println("Solve"); sksolver.markerBoard().clear(); stage.setScene(scene3);});
 
-        homeButton.setOnAction(e -> {System.out.println("Home"); borderPane1.setLeft(board()); borderPane2.setLeft(cellSelectorBoard()); stage.setScene(scene1);});
-        
         VBox vb1 = new VBox();
         Text textMode1 = new Text();
         textMode1.setText("Number mode");
@@ -79,32 +78,49 @@ public final class App extends Application {
         borderPane1.setLeft(board);
         borderPane1.setCenter(vb1);
         borderPane1.setRight(sp);
-
+        
         VBox vb2 = new VBox();
         Text textMode2 = new Text();
         TextField sumText = new TextField();
+        sumText.setId("sum");
         sumText.setAlignment(Pos.CENTER);
         sumText.setMaxWidth(80);
         sumText.setMaxHeight(10);
-
+        
         sumText.setTextFormatter(new TextFormatter<Integer>(c -> {
             if (c.getControlNewText().matches("^(?:[1-9]\\d?|)$")) {
                 return c;
             }else{
                 return null;
             }}));
-
+            
+            
+        homeButton.setOnAction(e -> {System.out.println("Home"); borderPane1.setLeft(board()); borderPane2.setLeft(cellSelectorBoard()); sumText.clear(); stage.setScene(scene1);});
+        
         Button saveButton = new Button();
         saveButton.setText("Save");
 
+        saveButton.setOnAction(e -> {sksolver.markerBoard().forEach(x-> System.out.println(x));});
+
+        Button undoButton = new Button();
+        undoButton.setText("Undo");
+
+        undoButton.setOnAction(e -> {sksolver.undoMarker();});
+
         textMode2.setText("Sum mode");
+        HBox hb2 = new HBox();
+        hb2.setSpacing(10);
+        hb2.setAlignment(Pos.CENTER);
+        hb2.getChildren().add(saveButton);
+        hb2.getChildren().add(undoButton);
+
         vb2.setPadding(new Insets(10, 30, 0, 30));
         vb2.setSpacing(10);
         vb2.setAlignment(Pos.CENTER);
         vb2.getChildren().add(textMode2);
         vb2.getChildren().add(sceneChangerButton2);
         vb2.getChildren().add(sumText);
-        vb2.getChildren().add(saveButton);
+        vb2.getChildren().add(hb2);
         
         borderPane2.setLeft(cellSelectorBoard);
         borderPane2.setCenter(vb2);
