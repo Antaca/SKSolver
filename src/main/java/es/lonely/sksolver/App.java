@@ -48,27 +48,37 @@ public final class App extends Application {
         Button homeButton = new Button();
         homeButton.setText("Return to home");
 
-        Button sceneChangerButton1 = new Button("Change to sum mode");
+        Button sceneChangerButton1 = new Button("Sudoku Killer mode");
         sceneChangerButton1.setCursor(Cursor.HAND);
-        sceneChangerButton1.setOnAction(e-> {stage.setScene(scene2); System.out.println("Sum mode"); borderPane2.setRight(sp);});
+        sceneChangerButton1.setOnAction(e-> {stage.setScene(scene2); System.out.println("Sudoku Killer"); borderPane2.setRight(sp);});
 
-        Button sceneChangerButton2 = new Button("Change to number mode");
+        Button sceneChangerButton2 = new Button("Sudoku mode");
         sceneChangerButton2.setCursor(Cursor.HAND);
-        sceneChangerButton2.setOnAction(e-> {stage.setScene(scene1); System.out.println("Number mode");
-        int[][] matrix = sksolver.board(); 
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-            System.out.println();
-        };
+        sceneChangerButton2.setOnAction(e-> {stage.setScene(scene1); System.out.println("Sudoku");
         borderPane1.setRight(sp);});
 
-        solveButton.setOnAction(e -> {System.out.println("Solve"); sksolver.markerBoard().clear(); stage.setScene(scene3);});
+        solveButton.setOnAction(e -> {System.out.println("Solve"); 
+        if(sksolver.board()!=null){
+            int[][] matrix = sksolver.board();
+            if(sksolver.isInputValid(matrix) && sksolver.solveSudoku(matrix, matrix.length)){
+                stage.setScene(scene3);
+                sksolver.display(matrix);   
+            }else{
+                System.out.println("Invalid input");
+            }
+        }else{
+            int[][] matrix = sksolver.markerBoard();
+            if(sksolver.solveKillerSudoku(matrix, matrix.length)){
+                stage.setScene(scene3);
+                sksolver.display(matrix);
+            }else{
+                System.out.println("Invalid input");
+            }
+        }});
 
         VBox vb1 = new VBox();
         Text textMode1 = new Text();
-        textMode1.setText("Number mode");
+        textMode1.setText("Sudoku");
         vb1.setPadding(new Insets(10, 30, 0, 30));
         vb1.setSpacing(10);
         vb1.setAlignment(Pos.CENTER);
@@ -95,19 +105,19 @@ public final class App extends Application {
             }}));
             
             
-        homeButton.setOnAction(e -> {System.out.println("Home"); borderPane1.setLeft(board()); borderPane2.setLeft(cellSelectorBoard()); sumText.clear(); stage.setScene(scene1);});
+        homeButton.setOnAction(e -> {System.out.println("Home"); borderPane1.setLeft(board()); borderPane2.setLeft(cellSelectorBoard()); sumText.clear(); borderPane1.setRight(sp); stage.setScene(scene1);});
         
         Button saveButton = new Button();
         saveButton.setText("Save");
 
-        saveButton.setOnAction(e -> {sksolver.markerBoard().forEach(x-> System.out.println(x));});
+        saveButton.setOnAction(e -> {sksolver.sumList().forEach(x-> System.out.println(x));});
 
         Button undoButton = new Button();
         undoButton.setText("Undo");
 
         undoButton.setOnAction(e -> {sksolver.undoMarker();});
 
-        textMode2.setText("Sum mode");
+        textMode2.setText("Sudoku Killer");
         HBox hb2 = new HBox();
         hb2.setSpacing(10);
         hb2.setAlignment(Pos.CENTER);
@@ -194,7 +204,7 @@ public final class App extends Application {
 
     private GridPane solveBoard(){
         GridPane board = new GridPane();
-
+        board.setId("solveBoard");
         PseudoClass right = PseudoClass.getPseudoClass("right");
         PseudoClass bottom = PseudoClass.getPseudoClass("bottom");
 
@@ -245,6 +255,6 @@ public final class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        launch();
     }
 }
